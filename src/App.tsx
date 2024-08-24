@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './App.css'
+import logo from './assets/logo.png'
 
 const pass = import.meta.env.VITE_PASSWORD
 const backendUrl = import.meta.env.VITE_BACKEND_URL
@@ -91,15 +92,16 @@ function App() {
 
   return (
     <>
-      <h1>HeartBurn Tracker</h1>
+      <img className="logo" src={logo} alt="logo" />
+      <h1>Heartburn Tracker</h1>
       <button onClick={() => setIsModalOpen(true)}>I have heartburn!</button>
       <button onClick={handleClick}>Show me history!</button>
       {entry ? entry.map((e: any) => (
         <div key={e.id}>
-          <p>{e.log_time}</p>
-          <p>{e.severity}</p>
-          <p>{e.symptoms}</p>
-          <p>{e.last_meal}</p>
+          <p>Date: {e.log_time}</p>
+          <p>Hearburn severity: {e.severity}</p>
+          <p>Symptoms: {e.symptoms}</p>
+          <p>Last meal had: {e.last_meal}</p>
         </div>
       )) : <p>No entries yet!</p>}
       {isModalOpen && (
@@ -158,4 +160,4 @@ function App() {
   )
 }
 
-export default App
+export default App;
