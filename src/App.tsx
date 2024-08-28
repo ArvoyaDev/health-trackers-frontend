@@ -8,8 +8,18 @@ import { refreshAccessToken } from './store/user'
 
 const url = import.meta.env.VITE_BACKEND_URL
 
+interface State {
+  auth: {
+    accessToken: string;
+    user: {
+      firstName: string;
+    };
+  };
+}
+
+
 function App() {
-  const auth = useSelector((state: any) => state.auth)
+  const auth = useSelector((state: State) => state.auth)
   const dispatch = useDispatch()
   console.log(auth)
 
