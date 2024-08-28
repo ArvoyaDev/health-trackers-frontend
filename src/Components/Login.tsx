@@ -1,11 +1,13 @@
+// src/components/Login.tsx
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../store/index.ts';
 import { signIn } from '../store/user';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const dispatch = useDispatch();
+  const dispatch = useDispatch<AppDispatch>();
   const url = import.meta.env.VITE_BACKEND_URL;
 
   const handleLogin = () => {
@@ -19,7 +21,6 @@ function Login() {
   const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPassword(e.target.value);
   };
-
 
   return (
     <div>

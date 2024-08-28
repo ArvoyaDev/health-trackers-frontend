@@ -5,6 +5,7 @@ import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
 import Login from './Components/Login'
 import { refreshAccessToken } from './store/user'
+import { AppDispatch } from './store/index'
 
 const url = import.meta.env.VITE_BACKEND_URL
 
@@ -20,7 +21,7 @@ interface State {
 
 function App() {
   const auth = useSelector((state: State) => state.auth)
-  const dispatch = useDispatch()
+  const dispatch = useDispatch<AppDispatch>();
   console.log(auth)
 
   useEffect(() => {

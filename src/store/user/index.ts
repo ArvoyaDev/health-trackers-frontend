@@ -1,18 +1,17 @@
+// src/store/user/index.ts
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import { ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
 
-// Type for thunk actions
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
-  TokenState,
+  void, // No global state
   unknown,
   Action<string>
 >;
 
-// Initial state for the token reducer
 const initialState: TokenState = {
   accessToken: null,
   user: {
@@ -23,7 +22,23 @@ const initialState: TokenState = {
   },
 };
 
-// User and token state types
+
+interface JWTData {
+  name?: string;
+  family_name?: string;
+  email?: string;
+  sub?: string;
+  // Add other fields if needed
+}
+
+interface LoginPayload {
+  accessToken: string;
+  user: User;
+}
+interface TokenState {
+  accessToken: string | null;
+  user: User;
+}
 interface User {
   firstName: string | null;
   lastName: string | null;
@@ -31,20 +46,8 @@ interface User {
   sub: string | null;
 }
 
-interface TokenState {
-  accessToken: string | null;
-  user: User;
-}
-
-interface LoginPayload {
-  accessToken: string;
-  user: User;
-}
-
-// Actions
 export const login = createAction<LoginPayload>("LOGIN");
 
-// Reducer
 const tokenReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(login, (state, action) => {
@@ -53,45 +56,45 @@ const tokenReducer = createReducer(initialState, (builder) => {
     });
 });
 
-// Thunk to handle sign-in
 export const signIn = (username: string, password: string, url: string): AppThunk => async (dispatch) => {
   try {
     const res = await axios.post(`${url}/aws-cognito/sign-in`, {
       username,
       password,
     });
-    const idToken = res.data.idToken;
-    const idData = jwtDecode<{ name: string; family_name: string; email: string; sub: string }>(idToken);
+    const accessToken = res.data.accessToken;
+    const idToken = res.data.idToken
+    const idData = jwtDecode<JWTData>(idToken); // Use `any` here or define a type for idData
     const user: User = {
-      firstName: idData.name,
-      lastName: idData.family_name,
-      email: idData.email,
-      sub: idData.sub,
+      firstName: idData.name || null,
+      lastName: idData.family_name || null,
+      email: idData.email || null,
+      sub: idData.sub || null,
     };
-    dispatch(login({ accessToken: idToken, user }));
+    dispatch(login({ accessToken: accessToken, user }));
   } catch (error) {
     console.log(error);
   }
 };
 
-// Thunk to handle access token refresh
 export const refreshAccessToken = (url: string): AppThunk => async (dispatch) => {
   try {
     const res = await axios.post(`${url}/aws-cognito/refresh-token`, {
       withCredentials: true,
     });
-    const idToken = res.data.idToken;
-    const idData = jwtDecode<{ name: string; family_name: string; email: string; sub: string }>(idToken);
+    const accessToken = res.data.accessToken;
+    const idToken = res.data.idToken
+    const idData = jwtDecode<JWTData>(idToken); // Use `any` here or define a type for idData
     const user: User = {
-      firstName: idData.name,
-      lastName: idData.family_name,
-      email: idData.email,
-      sub: idData.sub,
+      firstName: idData.name || null,
+      lastName: idData.family_name || null,
+      email: idData.email || null,
+      sub: idData.sub || null,
     };
-    dispatch(login({ accessToken: idToken, user }));
+    dispatch(login({ accessToken: accessToken, user }));
   } catch (error) {
     console.log(error);
   }
-};
+}
 
 export default tokenReducer;
