@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import tokenReducer from './user'; // Adjust the import path if needed
+import tokenReducer from './user';
 
 const store = configureStore({
   reducer: {
@@ -7,7 +7,6 @@ const store = configureStore({
   },
 });
 
-// Define and export RootState and AppDispatch
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 

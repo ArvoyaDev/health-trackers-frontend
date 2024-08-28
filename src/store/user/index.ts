@@ -58,13 +58,19 @@ const tokenReducer = createReducer(initialState, (builder) => {
 
 export const signIn = (username: string, password: string, url: string): AppThunk => async (dispatch) => {
   try {
-    const res = await axios.post(`${url}/aws-cognito/sign-in`, {
-      username,
-      password,
-    });
+    const res = await axios.post(
+      `${url}/aws-cognito/sign-in`,
+      {
+        username,
+        password,
+      },
+      {
+        withCredentials: true,
+      }
+    );
     const accessToken = res.data.accessToken;
     const idToken = res.data.idToken
-    const idData = jwtDecode<JWTData>(idToken); // Use `any` here or define a type for idData
+    const idData = jwtDecode<JWTData>(idToken);
     const user: User = {
       firstName: idData.name || null,
       lastName: idData.family_name || null,
@@ -80,11 +86,11 @@ export const signIn = (username: string, password: string, url: string): AppThun
 export const refreshAccessToken = (url: string): AppThunk => async (dispatch) => {
   try {
     const res = await axios.post(`${url}/aws-cognito/refresh-token`, {}, {
-      withCredentials: true, // Ensure credentials are included
+      withCredentials: true,
     });
     const accessToken = res.data.accessToken;
     const idToken = res.data.idToken
-    const idData = jwtDecode<JWTData>(idToken); // Use `any` here or define a type for idData
+    const idData = jwtDecode<JWTData>(idToken);
     const user: User = {
       firstName: idData.name || null,
       lastName: idData.family_name || null,

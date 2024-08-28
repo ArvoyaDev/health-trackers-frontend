@@ -22,37 +22,13 @@ interface State {
 function App() {
   const auth = useSelector((state: State) => state.auth)
   const dispatch = useDispatch<AppDispatch>();
-  console.log(auth)
 
   useEffect(() => {
     if (!auth.accessToken) {
       dispatch(refreshAccessToken(url))
     }
-  })
+  }, [dispatch, auth.accessToken])
 
-  useEffect(() => {
-    // Perform any side effects or actions when auth changes
-    if (auth.accessToken) {
-      // console.log('User is logged in')
-    }
-  }, [auth])
-
-  const handleClick = () => {
-    try {
-      fetch(`${url}/test`, {
-        method: 'GET',
-      }).then((response) => {
-        console.log(response)
-      }
-      ).then((data) => {
-        console.log(data)
-      }
-      )
-    } catch (error) {
-      console.error('Error:', error
-      )
-    }
-  }
 
   return (
     <>
@@ -75,7 +51,6 @@ function App() {
           </button>
         </>
       )}
-      <button onClick={handleClick}>test me</button>
     </>
   )
 }
