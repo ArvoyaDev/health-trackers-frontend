@@ -79,8 +79,8 @@ export const signIn = (username: string, password: string, url: string): AppThun
 
 export const refreshAccessToken = (url: string): AppThunk => async (dispatch) => {
   try {
-    const res = await axios.post(`${url}/aws-cognito/refresh-token`, {
-      withCredentials: true,
+    const res = await axios.post(`${url}/aws-cognito/refresh-token`, {}, {
+      withCredentials: true, // Ensure credentials are included
     });
     const accessToken = res.data.accessToken;
     const idToken = res.data.idToken
