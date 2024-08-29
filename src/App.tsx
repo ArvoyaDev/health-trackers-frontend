@@ -1,57 +1,42 @@
 import './App.css'
-import logo from './assets/logo.png'
-import { useSelector } from 'react-redux'
+import Header from './Components/Header'
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import Login from './Components/Login'
-import { refreshAccessToken } from './store/user'
+import { verifyAuthToken, refreshAccessToken } from './store/auth'
+import { useSelector } from 'react-redux'
 import { AppDispatch } from './store/index'
-
-const url = import.meta.env.VITE_BACKEND_URL
 
 interface State {
   auth: {
     accessToken: string;
+    isAuth: boolean;
     user: {
       firstName: string;
     };
   };
 }
 
+const url = import.meta.env.VITE_BACKEND_URL;
+
 
 function App() {
-  const auth = useSelector((state: State) => state.auth)
+  const authState = useSelector((state: State) => state.auth)
   const dispatch = useDispatch<AppDispatch>();
 
   useEffect(() => {
-    if (!auth.accessToken) {
+    if (authState.accessToken != null) {
+      dispatch(verifyAuthToken(authState.accessToken))
+    } else if (authState.accessToken == null || !authState.isAuth) {
       dispatch(refreshAccessToken(url))
     }
-  }, [dispatch, auth.accessToken])
+  }, [dispatch, authState.accessToken, authState.isAuth])
 
 
   return (
     <>
-      <img className="logo" src={logo} alt="logo" />
-      <h1>Health Tracker</h1>
-      {!auth.accessToken ? (
-        <div>
-          <Login />
-        </div>
-      ) : (
-        <div>
-          <h2>Welcome back {auth.user.firstName}!</h2>
-        </div>
-      )}
-      {auth.accessToken && (
-        <>
-          <button
-          >
-            Logout
-          </button>
-        </>
-      )}
+      <Header authState={authState} />
     </>
+
   )
 }
 
