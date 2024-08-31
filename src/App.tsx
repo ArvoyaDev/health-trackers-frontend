@@ -1,8 +1,9 @@
 import './App.css'
 import Header from './Components/Header'
-import { useEffect } from 'react'
+import axios from 'axios'
+import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { verifyAuthToken, refreshAccessToken } from './store/auth'
+import { refreshAccessToken } from './store/auth'
 import { useSelector } from 'react-redux'
 import { AppDispatch } from './store/index'
 
@@ -22,19 +23,44 @@ const url = import.meta.env.VITE_BACKEND_URL;
 function App() {
   const authState = useSelector((state: State) => state.auth)
   const dispatch = useDispatch<AppDispatch>();
+  const [foundUser, setFoundUser] = useState<boolean>(false);
+
 
   useEffect(() => {
-    if (authState.accessToken != null) {
-      dispatch(verifyAuthToken(authState.accessToken))
-    } else if (authState.accessToken == null || !authState.isAuth) {
-      dispatch(refreshAccessToken(url))
+    const fetchData = async () => {
+      try {
+        const res = await axios.get(
+          `${url}/db/user`,
+          {
+            headers: {
+              Authorization: `Bearer ${authState.accessToken}`
+            }
+          }
+        );
+        setFoundUser(true)
+        console.log(res)
+      } catch (err) {
+        setFoundUser(false);
+        console.log(err);
+      }
     }
-  }, [dispatch, authState.accessToken, authState.isAuth])
+
+    if (authState.accessToken == null && !authState.isAuth) {
+      dispatch(refreshAccessToken(url));
+    }
+    if (authState.isAuth) {
+      fetchData();
+    }
+
+  }, [dispatch, authState.accessToken, authState.isAuth, setFoundUser]);
+
+
 
 
   return (
     <>
       <Header authState={authState} />
+      {authState.isAuth && !foundUser ? <p>Get Started! Start tracking now!</p> : authState.isAuth && foundUser ? < p > Here is your data</p > : null}
     </>
 
   )

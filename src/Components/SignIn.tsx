@@ -10,26 +10,28 @@ function SignIn() {
   const [password, setPassword] = useState('');
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     dispatch(signIn(email, password, url));
   };
 
   return (
-    <form className="" onSubmit={handleSubmit}>
+    <form className="signInForm" onSubmit={handleSubmit}>
       <input
         type="email"
         placeholder="Email"
+        required
         value={email}
         onChange={(e) => setEmail(e.target.value)}
       />
       <input
         type="password"
         placeholder="Password"
+        required
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button onClick={handleSubmit} >Sign In</button>
+      <button type="submit" >Sign In</button>
     </form>
   );
 }

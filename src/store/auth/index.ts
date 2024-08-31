@@ -22,6 +22,7 @@ interface JWTAuthData {
   exp: number;
 }
 
+
 interface LoginPayload {
   accessToken: string | null;
   isAuth: boolean;
@@ -31,6 +32,9 @@ export interface TokenState {
   accessToken: string | null;
   isAuth: boolean;
   user: User;
+  signUp: {
+    confirmed: boolean;
+  }
 }
 interface User {
   firstName: string | null;
@@ -48,24 +52,40 @@ const initialState: TokenState = {
     email: null,
     sub: null,
   },
+  signUp: {
+    confirmed: false,
+  }
 };
 
 
 export const login = createAction<LoginPayload>("LOGIN");
 export const authCheck = createAction<{ isAuth: boolean }>("AUTH_CHECK");
+export const logout = createAction("LOGOUT");
 
 const authReducer = createReducer(initialState, (builder) => {
   builder
     .addCase(login, (state, action) => {
       state.accessToken = action.payload.accessToken;
       state.user = action.payload.user;
+      state.isAuth = action.payload.isAuth;
     })
     .addCase(authCheck, (state, action) => {
       state.isAuth = action.payload.isAuth;
-    });
+    })
+    .addCase(logout, (state) => {
+      state.accessToken = null;
+      state.isAuth = false;
+      state.user = {
+        firstName: null,
+        lastName: null,
+        email: null,
+        sub: null,
+      };
+    })
 });
 
 export const signIn = (username: string, password: string, url: string): AppThunk => async (dispatch) => {
+  console.log("hello?")
   const res = await axios.post(
     `${url}/aws-cognito/sign-in`,
     {
@@ -111,6 +131,15 @@ export const verifyAuthToken = (token: string): AppThunk => async (dispatch) => 
   } else {
     dispatch(authCheck({ isAuth: false }));
     dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL));
+  }
+}
+
+export const signOut = (): AppThunk => async (dispatch) => {
+  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/aws-cognito/sign-out`, {}, {
+    withCredentials: true,
+  });
+  if (res.status === 200) {
+    dispatch(logout());
   }
 }
 

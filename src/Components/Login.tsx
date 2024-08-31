@@ -1,3 +1,7 @@
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../store/index'
+import { signOut } from '../store/auth'
+
 interface LoginProps {
   isAuth: boolean;
   activeButton: 'signUp' | 'signIn' | null;
@@ -5,10 +9,19 @@ interface LoginProps {
 }
 
 function Login({ isAuth, activeButton, setActiveButton }: LoginProps) {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const handleLogout = () => {
+    dispatch(signOut());
+  }
+
+
   return (
     <div className="navButtons">
       {isAuth ? (
-        <button>Logout</button>
+        <button
+          onClick={handleLogout}
+        >Logout</button>
       ) : (
         <div className="signUpIn">
           <button
