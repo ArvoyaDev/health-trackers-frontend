@@ -1,9 +1,11 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from './auth';
+import trackerReducer from "./illnesses";
 
 const store = configureStore({
   reducer: {
     auth: authReducer,
+    tracker: trackerReducer,
   },
 });
 

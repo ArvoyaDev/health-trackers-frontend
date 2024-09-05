@@ -1,6 +1,34 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import axios from 'axios'
-const initialState = {
+import { ThunkAction } from 'redux-thunk';
+import { Action } from 'redux';
+
+export type AppThunk<ReturnType = void> = ThunkAction<
+  ReturnType,
+  void,
+  unknown,
+  Action<string>
+>;
+
+interface Log {
+  logTime: string | null;
+  severity: string | null;
+  symptoms: string[];
+  Notes: string | null;
+}
+
+interface Tracker {
+  illness: string | null;
+  symptoms: string | null;
+  logs: Log[];
+}
+
+interface TrackerState {
+  trackers: Tracker[];
+}
+
+
+const initialState: TrackerState = {
   trackers: [
     {
       illness: null,
@@ -17,7 +45,7 @@ const initialState = {
   ],
 }
 
-const getUser = createAction("GET_USER")
+const getUser = createAction<TrackerState>("GET_USER")
 
 const trackerReducer = createReducer(initialState, (builder) => {
   builder
@@ -26,18 +54,16 @@ const trackerReducer = createReducer(initialState, (builder) => {
     });
 });
 
-export const fetchUser = (accessToken: string) => async () => {
+export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => {
   const res = await axios.post(
     `${import.meta.env.VITE_BACKEND_URL}/db/user`,
-    {
-    },
     {
       headers: {
         Authorization: `Bearer ${accessToken}`
       }
     }
   );
-  console.log(res);
+
 }
 
 

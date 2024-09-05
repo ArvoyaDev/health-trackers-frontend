@@ -84,63 +84,103 @@ const authReducer = createReducer(initialState, (builder) => {
     })
 });
 
-export const signIn = (username: string, password: string, url: string): AppThunk => async (dispatch) => {
-  console.log("hello?")
-  const res = await axios.post(
-    `${url}/aws-cognito/sign-in`,
-    {
-      username,
-      password,
-    },
-    {
-      withCredentials: true,
+export const signIn = (
+  username: string,
+  password: string,
+  url: string
+): AppThunk<Promise<{ success: boolean; message?: string }>> => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `${url}/aws-cognito/sign-in`,
+      { username, password },
+      { withCredentials: true }
+    );
+
+    const accessToken = res.data.accessToken;
+    const idToken = res.data.idToken;
+    const idData = jwtDecode<JWTData>(idToken);
+
+    const user: User = {
+      firstName: idData.name || null,
+      lastName: idData.family_name || null,
+      email: idData.email || null,
+      sub: idData.sub || null,
+    };
+
+    dispatch(login({ accessToken, user, isAuth: true }));
+
+    return { success: true };
+  } catch (error: any) {
+
+    // Checking if the error message contains 'Incorrect username or password'
+    const errorMessage = error.response?.data;
+    if (errorMessage && errorMessage.includes("Incorrect username or password")) {
+      return { success: false, message: "Incorrect username or password." };
+    } else {
+      return { success: false, message: errorMessage || error.message || "An unknown error occurred." };
     }
-  );
-  const accessToken = res.data.accessToken;
-  const idToken = res.data.idToken
-  const idData = jwtDecode<JWTData>(idToken);
-  const user: User = {
-    firstName: idData.name || null,
-    lastName: idData.family_name || null,
-    email: idData.email || null,
-    sub: idData.sub || null,
-  };
-  dispatch(login({ accessToken: accessToken, user, isAuth: true }));
+  }
 };
 
-export const refreshAccessToken = (url: string): AppThunk => async (dispatch) => {
-  const res = await axios.post(`${url}/aws-cognito/refresh-token`, {}, {
-    withCredentials: true,
-  });
-  const accessToken = res.data.accessToken;
-  const idToken = res.data.idToken
-  const idData = jwtDecode<JWTData>(idToken);
-  const user: User = {
-    firstName: idData.name || null,
-    lastName: idData.family_name || null,
-    email: idData.email || null,
-    sub: idData.sub || null,
-  };
-  dispatch(login({ accessToken: accessToken, user, isAuth: true }));
-}
+export const refreshAccessToken = (
+  url: string
+): AppThunk<Promise<{ success: boolean; message?: string }>> => async (dispatch) => {
+  try {
+    const res = await axios.post(
+      `${url}/aws-cognito/refresh-token`,
+      {},
+      { withCredentials: true }
+    );
+
+    const accessToken = res.data.accessToken;
+    const idToken = res.data.idToken;
+    const idData = jwtDecode<JWTData>(idToken);
+
+    const user: User = {
+      firstName: idData.name || null,
+      lastName: idData.family_name || null,
+      email: idData.email || null,
+      sub: idData.sub || null,
+    };
+
+    dispatch(login({ accessToken, user, isAuth: true }));
+
+    return { success: true };
+  } catch (error: any) {
+    return { success: false, message: error.response?.data?.message || error.message };
+  }
+};
 
 export const verifyAuthToken = (token: string): AppThunk => async (dispatch) => {
   const authData = jwtDecode<JWTAuthData>(token);
+
   if (authData.exp && authData.exp > Date.now() / 1000) {
     dispatch(authCheck({ isAuth: true }));
   } else {
     dispatch(authCheck({ isAuth: false }));
-    dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL));
-  }
-}
+    const result = await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL));
 
-export const signOut = (): AppThunk => async (dispatch) => {
-  const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/aws-cognito/sign-out`, {}, {
-    withCredentials: true,
-  });
-  if (res.status === 200) {
-    dispatch(logout());
+    if (!result.success) {
+      console.error(result.message);
+    }
   }
-}
+};
+
+export const signOut = (): AppThunk<Promise<{ success: boolean; message?: string }>> => async (dispatch) => {
+  try {
+    const res = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/aws-cognito/sign-out`, {}, {
+      withCredentials: true,
+    });
+
+    if (res.status === 200) {
+      dispatch(logout());
+      return { success: true };
+    }
+
+    return { success: false, message: 'Failed to sign out' };
+  } catch (error: any) {
+    return { success: false, message: error.response?.data?.message || error.message };
+  }
+};
 
 export default authReducer;

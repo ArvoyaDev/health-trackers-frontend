@@ -52,12 +52,10 @@ body {
 .header{
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
 }
 
 .logo {
-  margin: auto;
   width: 130px;
   height: 130px;
   margin-bottom: 20px;
@@ -190,4 +188,60 @@ button:hover {
   max-height: 300px; /* Adjust this height as needed */
   overflow-y: auto;
   padding-right: 10px; /* Optional for better scrolling experience */
+}
+
+.trackerForm {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  padding: 10px;
+  border-radius: 15px;
+  border-style: solid; /* or another style like dashed, dotted, etc. */
+  border-width: 2px;
+  border-color: #F9A527;
+  max-width: 350px;
+  position: relative;
+  margin-top: 20px;
+}
+
+.trackerHeader {
+  text-align: center;
+  width: 100%;
+}
+
+.trackerQuestions {
+  align-self: flex-start;
+  width: 100%;
+  margin-left:15px;
+}
+
+.trackerQuestions input {
+  margin-bottom: 15px;
+}
+
+
+.trackerQuestions {
+  width: 100%;
+}
+
+.trackerTextarea {
+  max-width: 100%;
+  box-sizing: border-box; /* Ensures padding and border are included in the element's total width and height */
+  resize: none;
+}
+
+
+.trackerButton {
+  align-self: flex-end;
+background-color: #1C2B3B;
+  border-width:1px;
+  border-style: solid;
+  color:white;
+}
+
+.trackerButton:hover{
+  background-color: #F9A527;
+  color: #1C2B3B;
 }

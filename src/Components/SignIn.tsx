@@ -8,15 +8,23 @@ const url = import.meta.env.VITE_BACKEND_URL;
 function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    dispatch(signIn(email, password, url));
+    setError(''); // Reset any existing error
+
+    const result = await dispatch(signIn(email, password, url));
+
+    if (!result.success) {
+      setError(result.message || 'An error occurred during sign-in');
+    }
   };
 
   return (
     <form className="signInForm" onSubmit={handleSubmit}>
+      {error && <p style={{ color: "red" }} className="error">{error}</p>}
       <input
         type="email"
         placeholder="Email"
@@ -31,7 +39,7 @@ function SignIn() {
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
-      <button type="submit" >Sign In</button>
+      <button type="submit">Sign In</button>
     </form>
   );
 }

@@ -1,5 +1,7 @@
 import './App.css'
 import Header from './Components/Header'
+import CreateTracker from './Components/CreateTracker'
+import Logger from './Components/Logger'
 import axios from 'axios'
 import { useState, useEffect } from 'react'
 import { useDispatch } from 'react-redux'
@@ -19,15 +21,15 @@ interface State {
 
 const url = import.meta.env.VITE_BACKEND_URL;
 
-
 function App() {
   const authState = useSelector((state: State) => state.auth)
   const dispatch = useDispatch<AppDispatch>();
   const [foundUser, setFoundUser] = useState<boolean>(false);
-
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const res = await axios.get(
           `${url}/db/user`,
@@ -37,11 +39,13 @@ function App() {
             }
           }
         );
-        setFoundUser(true)
-        console.log(res)
+        console.log(res.data);
+        setFoundUser(true);
       } catch (err) {
-        setFoundUser(false);
         console.log(err);
+        setFoundUser(false);
+      } finally {
+        setLoading(false);
       }
     }
 
@@ -50,19 +54,17 @@ function App() {
     }
     if (authState.isAuth) {
       fetchData();
+    } else {
+      setLoading(false);
     }
 
   }, [dispatch, authState.accessToken, authState.isAuth, setFoundUser]);
 
-
-
-
   return (
     <>
       <Header authState={authState} />
-      {authState.isAuth && !foundUser ? <p>Get Started! Start tracking now!</p> : authState.isAuth && foundUser ? < p > Here is your data</p > : null}
+      {loading ? <p>Loading...</p> : authState.isAuth && !foundUser ? <CreateTracker /> : authState.isAuth && foundUser ? <Logger /> : null}
     </>
-
   )
 }
 
