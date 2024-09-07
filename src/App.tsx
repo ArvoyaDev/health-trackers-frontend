@@ -1,13 +1,12 @@
-import './App.css'
-import Header from './Components/Header'
-import CreateTracker from './Components/CreateTracker'
-import Logger from './Components/Logger'
-import axios from 'axios'
-import { useState, useEffect } from 'react'
-import { useDispatch } from 'react-redux'
-import { refreshAccessToken } from './store/auth'
-import { useSelector } from 'react-redux'
-import { AppDispatch } from './store/index'
+import './App.css';
+import Header from './Components/Header';
+import CreateTracker from './Components/CreateTracker';
+import Logger from './Components/Logger';
+import { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { refreshAccessToken } from './store/auth';
+import { fetchUser } from './store/trackers'; // Import your `fetchUser` action
+import { AppDispatch } from './store/index';
 
 interface State {
   auth: {
@@ -17,55 +16,62 @@ interface State {
       firstName: string;
     };
   };
+  tracker: {
+    trackers: any[];
+  };
 }
 
 const url = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
-  const authState = useSelector((state: State) => state.auth)
+  const authState = useSelector((state: State) => state.auth);
+  const trackerState = useSelector((state: State) => state.tracker);
   const dispatch = useDispatch<AppDispatch>();
-  const [foundUser, setFoundUser] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const loadData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(
-          `${url}/db/user`,
-          {
-            headers: {
-              Authorization: `Bearer ${authState.accessToken}`
-            }
-          }
-        );
-        console.log(res.data);
-        setFoundUser(true);
+        // Dispatch the fetchUser action to retrieve the user's trackers
+        await dispatch(fetchUser(authState.accessToken));
       } catch (err) {
         console.log(err);
-        setFoundUser(false);
       } finally {
         setLoading(false);
       }
-    }
+    };
 
+    // Refresh access token if not authenticated
     if (authState.accessToken == null && !authState.isAuth) {
       dispatch(refreshAccessToken(url));
     }
+
+    // Fetch user data once authenticated
     if (authState.isAuth) {
-      fetchData();
+      loadData();
     } else {
       setLoading(false);
     }
 
-  }, [dispatch, authState.accessToken, authState.isAuth, setFoundUser]);
+  }, [dispatch, authState.accessToken, authState.isAuth]);
+
+  const foundUser = trackerState.trackers.length > 0;
 
   return (
     <>
       <Header authState={authState} />
-      {loading ? <p>Loading...</p> : authState.isAuth && !foundUser ? <CreateTracker /> : authState.isAuth && foundUser ? <Logger /> : null}
+      {loading ? (
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <h1>Loading...</h1>
+        </div>
+      ) : authState.isAuth && !foundUser ? (
+        <CreateTracker />
+      ) : authState.isAuth && foundUser ? (
+        <Logger />
+      ) : null}
     </>
-  )
+  );
 }
 
 export default App;

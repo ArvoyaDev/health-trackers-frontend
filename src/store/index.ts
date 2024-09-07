@@ -1,6 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from './auth';
-import trackerReducer from "./illnesses";
+import trackerReducer from "./trackers";
 
 const store = configureStore({
   reducer: {

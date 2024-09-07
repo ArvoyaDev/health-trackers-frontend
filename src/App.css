@@ -245,3 +245,8 @@ background-color: #1C2B3B;
   background-color: #F9A527;
   color: #1C2B3B;
 }
+
+.error{
+  color: red;
+  margin: 0;
+}

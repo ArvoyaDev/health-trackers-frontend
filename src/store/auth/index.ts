@@ -28,6 +28,7 @@ interface LoginPayload {
   isAuth: boolean;
   user: User;
 }
+
 export interface TokenState {
   accessToken: string | null;
   isAuth: boolean;
