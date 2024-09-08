@@ -91,7 +91,6 @@ function Logger() {
           },
         }
       );
-      console.log(res.data);
       dispatch(addLog(res.data));
       setSelectedSymptoms([]); // Clear selected symptoms
       setSeverity(''); // Clear severity
@@ -103,6 +102,7 @@ function Logger() {
         setSuccess(false);
       }, 3000);
     } catch (error) {
+      console.log(error);
       setError(`An error occurred. Error: ${error} Please try again.`); // Display an error message
     }
 

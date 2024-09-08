@@ -163,7 +163,7 @@ export const verifyAuthToken = (token: string): AppThunk<Promise<{ success: bool
       const result = await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL)) as { success: boolean; message?: string };
 
       if (!result.success) {
-        console.error(result.message);
+        return { success: false, message: 'Failed to refresh access token.' };
       }
 
       return result;

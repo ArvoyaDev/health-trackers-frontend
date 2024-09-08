@@ -2,10 +2,11 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import axios from 'axios';
 import { ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
+import { RootState } from '../../store/';
 
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
-  void,
+  RootState,
   unknown,
   Action<string>
 >;
@@ -77,7 +78,8 @@ const trackerReducer = createReducer(initialState, (builder) => {
 });
 
 // Async action to fetch user data
-export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => {
+//
+export const fetchUser = (accessToken: string): AppThunk<Promise<{ success: boolean; message?: string }>> => async (dispatch) => {
   try {
     const res = await axios.get(
       `${import.meta.env.VITE_BACKEND_URL}/db/user`,
@@ -95,6 +97,9 @@ export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => 
 
     // Mapping trackers with their corresponding symptoms
     trackers.forEach((tracker) => {
+      if (tracker.logs === null) {
+        tracker.logs = [];
+      }
       stateTracker.push({
         tracker_name: tracker.tracker_name,
         symptoms: tracker.symptoms,
@@ -104,8 +109,16 @@ export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => 
 
     // Dispatching the getUser action with mapped trackers
     dispatch(getUser({ trackers: stateTracker, selectedTracker: stateTracker[0] }));
+
+    return { success: true };
   } catch (error) {
-    console.error("Error fetching user data:", error);
+    if (axios.isAxiosError(error)) {
+      // Handle Axios error
+      return { success: false, message: error.message };
+    } else {
+      // Handle unexpected errors
+      return { success: false, message: 'An unexpected error occurred' };
+    }
   }
 };
 

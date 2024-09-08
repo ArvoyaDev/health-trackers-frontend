@@ -20,7 +20,7 @@ function CreateUserAndTracker() {
   const dispatch = useDispatch<AppDispatch>();
 
   const validateInput = (value: string) => {
-    const pattern = /^(\s*\w+(\s+\w+)?\s*(,\s*\w+(\s+\w+)?\s*)*)?$/;
+    const pattern = /^(\s*\w+(-\w+)?(\s+\w+(-\w+)?){0,2}\s*)(,\s*\w+(-\w+)?(\s+\w+(-\w+)?){0,2}\s*)*$/;
     return pattern.test(value);
   };
 
@@ -66,7 +66,8 @@ function CreateUserAndTracker() {
       if (res.status == 201) {
         setError('');
         setSuccess(true); // Set success to true if the request succeeds
-        dispatch(fetchUser(accessToken));
+        await dispatch(verifyAuthToken(accessToken));
+        await dispatch(fetchUser(accessToken));
       }
     } catch (error) {
 
@@ -95,8 +96,8 @@ function CreateUserAndTracker() {
             <h3>What are the symptoms associated with it?</h3>
             <textarea
               required
-              placeholder="sour taste, chest pain, throat burn, nausea, etc."
-              title="Please enter symptoms one or two words per symptom, separated by commas."
+              placeholder="chest pain, sore throat, nausea, right-side pain, stomach bloating, etc."
+              title="Please enter symptoms, each consisting of one to three words (including hyphens), separated by commas."
               className="trackerTextarea"
               value={inputValue}
               rows={4}

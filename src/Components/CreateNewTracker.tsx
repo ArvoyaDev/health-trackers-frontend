@@ -71,7 +71,8 @@ function CreateNewTracker() {
         setTimeout(() => {
           setSuccess(false);
         }, 3000);
-        dispatch(fetchUser(accessToken));
+        await dispatch(verifyAuthToken(accessToken));
+        await dispatch(fetchUser(accessToken));
       }
     } catch (error) {
 

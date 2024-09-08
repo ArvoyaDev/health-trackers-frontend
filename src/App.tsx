@@ -29,8 +29,8 @@ function App() {
         if (authState.accessToken) {
           await dispatch(fetchUser(authState.accessToken));
         }
-      } catch (err) {
-        console.log(err);
+      } catch {
+        setLoading(false);
       } finally {
         setLoading(false);
       }
