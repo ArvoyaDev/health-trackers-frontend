@@ -74,25 +74,27 @@ function CreateNewTracker() {
         }, 3000);
         dispatch(fetchUser(accessToken));
       }
-    } catch (error: any) {
-      console.log('error', error.status);
-      if (error.status == 409) {
-        console.log('hello');
-        setError('Tracker Name Already Exists. Please choose a different name.');
+    } catch (error) {
+
+      if (axios.isAxiosError(error)) {
+        if (error.status == 409) {
+          console.log('hello');
+          setError('Tracker Name Already Exists. Please choose a different name.');
+        }
+        else if (error.status == 403) {
+          setError('Tracker Limit Reached. Please delete a tracker to create a new one.');
+        } else {
+          setError(error.response?.data?.message || error.message);
+        }
       }
-      else if (error.status == 403) {
-        setError('Tracker Limit Reached. Please delete a tracker to create a new one.');
-      } else {
-        setError(error.response?.data?.message || error.message);
-      }
-    }
-  };
+    };
+  }
 
   return (
     <form className="trackerForm" onSubmit={handleSubmit}>
       {!success ? (
         <>
-          <h1 className="trackerHeader">Create a New Tracker</h1>
+          <h1 className="trackerHeader">Create New Tracker</h1>
           <div className="trackerQuestions">
             <h3>What is your main concern?</h3>
             <input

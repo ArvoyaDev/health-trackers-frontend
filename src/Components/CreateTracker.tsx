@@ -68,8 +68,11 @@ function CreateUserAndTracker() {
         setSuccess(true); // Set success to true if the request succeeds
         dispatch(fetchUser(accessToken));
       }
-    } catch (error: any) {
-      setError(error.response?.data?.message || error.message);
+    } catch (error) {
+
+      if (axios.isAxiosError(error)) {
+        setError(error.response?.data?.message || error.message);
+      }
     }
   };
 
