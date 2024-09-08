@@ -54,7 +54,7 @@ function App() {
   return (
     <>
       <Router>
-        <Header authState={authState} foundUser={foundUser} />
+        <Header auth={authState} foundUser={foundUser} />
         <Routes>
           <Route path="/" element={
             loading ? (
