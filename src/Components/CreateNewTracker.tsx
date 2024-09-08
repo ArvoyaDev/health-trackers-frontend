@@ -62,7 +62,6 @@ function CreateNewTracker() {
           },
         }
       );
-      console.log(res.data);
       if (res.status == 201) {
         setError('');
         setSuccess(true); // Set success to true if the request succeeds
@@ -78,7 +77,6 @@ function CreateNewTracker() {
 
       if (axios.isAxiosError(error)) {
         if (error.status == 409) {
-          console.log('hello');
           setError('Tracker Name Already Exists. Please choose a different name.');
         }
         else if (error.status == 403) {

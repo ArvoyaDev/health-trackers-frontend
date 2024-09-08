@@ -11,10 +11,10 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 
 interface Log {
-  logTime: string | null;
+  log_time: string | null;
   severity: string | null;
   symptoms: string[];
-  Notes: string | null;
+  notes: string | null;
 }
 
 interface Symptom {
@@ -50,17 +50,30 @@ const initialState: TrackerState = {
 
 // Action to set the user data
 const getUser = createAction<TrackerState>("GET_USER");
+export const addLog = createAction<Log>("ADD_LOG");
+
 export const updateSelectedTracker = createAction<Tracker>("UPDATE_SELECTED_TRACKER");
 
 // Reducer for managing tracker state
 const trackerReducer = createReducer(initialState, (builder) => {
-  builder.addCase(getUser, (state, action) => {
-    state.trackers = action.payload.trackers;
-    state.selectedTracker = action.payload.selectedTracker;
-  })
+  builder
+    .addCase(getUser, (state, action) => {
+      state.trackers = action.payload.trackers;
+      state.selectedTracker = action.payload.selectedTracker;
+    })
     .addCase(updateSelectedTracker, (state, action) => {
       state.selectedTracker = action.payload;
+    })
+    .addCase(addLog, (state, action) => {
+      state.selectedTracker.logs.push(action.payload);
+      state.trackers = state.trackers.map((tracker) => {
+        if (tracker.tracker_name === state.selectedTracker.tracker_name) {
+          return state.selectedTracker;
+        }
+        return tracker;
+      });
     });
+
 });
 
 // Async action to fetch user data
@@ -74,8 +87,6 @@ export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => 
         },
       }
     );
-    console.log(res.data)
-
 
     const obj: UserPayload = res.data;
 
@@ -87,7 +98,7 @@ export const fetchUser = (accessToken: string): AppThunk => async (dispatch) => 
       stateTracker.push({
         tracker_name: tracker.tracker_name,
         symptoms: tracker.symptoms,
-        logs: [],
+        logs: tracker.logs,
       });
     });
 

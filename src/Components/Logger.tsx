@@ -1,7 +1,7 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useState } from 'react';
 import { TrackerState } from '../store/trackers';
-import { updateSelectedTracker } from '../store/trackers';
+import { updateSelectedTracker, addLog } from '../store/trackers';
 import './Styles/Logger.css';
 import axios from 'axios'; // Make sure to import axios
 import { verifyAuthToken } from '../store/auth';
@@ -82,7 +82,7 @@ function Logger() {
     // Send the data to the backend (replace `YOUR_BACKEND_URL` with the correct URL)
     try {
       await dispatch(verifyAuthToken(accessToken));
-      await axios.post(
+      const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/db/create-symptom-log`,
         logData,
         {
@@ -91,6 +91,8 @@ function Logger() {
           },
         }
       );
+      console.log(res.data);
+      dispatch(addLog(res.data));
       setSelectedSymptoms([]); // Clear selected symptoms
       setSeverity(''); // Clear severity
       setNotes(''); // Clear notes

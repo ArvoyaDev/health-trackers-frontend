@@ -4,6 +4,7 @@ import Header from './Components/Header';
 import CreateUserAndTracker from './Components/CreateTracker';
 import CreateNewTracker from './Components/CreateNewTracker';
 import Logger from './Components/Logger';
+import DisplayLogs from './Components/DisplayLogs';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { refreshAccessToken } from './store/auth';
@@ -70,6 +71,11 @@ function App() {
           <Route path="/create" element={
             authState.isAuth && foundUser ? (
               <CreateNewTracker />
+            ) : null
+          } />
+          <Route path="/logs" element={
+            authState.isAuth && foundUser ? (
+              <DisplayLogs />
             ) : null
           } />
         </Routes>
