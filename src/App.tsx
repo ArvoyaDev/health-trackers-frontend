@@ -1,31 +1,22 @@
 import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Header from './Components/Header';
-import CreateTracker from './Components/CreateTracker';
+import CreateUserAndTracker from './Components/CreateTracker';
+import CreateNewTracker from './Components/CreateNewTracker';
 import Logger from './Components/Logger';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { refreshAccessToken } from './store/auth';
 import { fetchUser } from './store/trackers'; // Import your `fetchUser` action
 import { AppDispatch } from './store/index';
-
-interface State {
-  auth: {
-    accessToken: string;
-    isAuth: boolean;
-    user: {
-      firstName: string;
-    };
-  };
-  tracker: {
-    trackers: any[];
-  };
-}
+import { TokenState } from './store/auth';
+import { TrackerState } from './store/trackers';
 
 const url = import.meta.env.VITE_BACKEND_URL;
 
 function App() {
-  const authState = useSelector((state: State) => state.auth);
-  const trackerState = useSelector((state: State) => state.tracker);
+  const authState = useSelector((state: { auth: TokenState }) => state.auth);
+  const trackerState = useSelector((state: { tracker: TrackerState }) => state.tracker);
   const dispatch = useDispatch<AppDispatch>();
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -34,7 +25,9 @@ function App() {
       setLoading(true);
       try {
         // Dispatch the fetchUser action to retrieve the user's trackers
-        await dispatch(fetchUser(authState.accessToken));
+        if (authState.accessToken) {
+          await dispatch(fetchUser(authState.accessToken));
+        }
       } catch (err) {
         console.log(err);
       } finally {
@@ -60,16 +53,27 @@ function App() {
 
   return (
     <>
-      <Header authState={authState} />
-      {loading ? (
-        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <h1>Loading...</h1>
-        </div>
-      ) : authState.isAuth && !foundUser ? (
-        <CreateTracker />
-      ) : authState.isAuth && foundUser ? (
-        <Logger />
-      ) : null}
+      <Router>
+        <Header authState={authState} foundUser={foundUser} />
+        <Routes>
+          <Route path="/" element={
+            loading ? (
+              <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+                <h1>Loading...</h1>
+              </div>
+            ) : authState.isAuth && !foundUser ? (
+              <CreateUserAndTracker />
+            ) : authState.isAuth && foundUser ? (
+              <Logger />
+            ) : null
+          } />
+          <Route path="/create" element={
+            authState.isAuth && foundUser ? (
+              <CreateNewTracker />
+            ) : null
+          } />
+        </Routes>
+      </Router>
     </>
   );
 }

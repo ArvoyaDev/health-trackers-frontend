@@ -9,12 +9,11 @@ import { fetchUser } from '../store/trackers';
 
 
 
-function CreateUserAndTracker() {
+function CreateNewTracker() {
   const [inputValue, setInputValue] = useState('');
   const [trackerName, setTrackerName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-  const email = useSelector((state: { auth: TokenState }) => state.auth.user.email);
   const accessToken = useSelector((state: { auth: TokenState }) => state.auth.accessToken);
 
   const dispatch = useDispatch<AppDispatch>();
@@ -33,6 +32,7 @@ function CreateUserAndTracker() {
     }
 
     const symptomsArray = inputValue.split(',').map((symptom) => symptom.trim());
+
     if (symptomsArray.length < 2) {
       setError('Please enter at least 2 symptoms.');
       return; // Prevent form submission if validation fails
@@ -51,9 +51,8 @@ function CreateUserAndTracker() {
       await dispatch(verifyAuthToken(accessToken));
 
       const res = await axios.post(
-        `${import.meta.env.VITE_BACKEND_URL}/db/make-user`,
+        `${import.meta.env.VITE_BACKEND_URL}/db/make-tracker`,
         {
-          email,
           tracker_name: trackerName,
           symptoms: symptomsArray,
         },
@@ -63,13 +62,29 @@ function CreateUserAndTracker() {
           },
         }
       );
+      console.log(res.data);
       if (res.status == 201) {
         setError('');
         setSuccess(true); // Set success to true if the request succeeds
+        setInputValue('');
+        setTrackerName('');
+        //timeout to reset the success message
+        setTimeout(() => {
+          setSuccess(false);
+        }, 3000);
         dispatch(fetchUser(accessToken));
       }
     } catch (error: any) {
-      setError(error.response?.data?.message || error.message);
+      console.log('error', error.status);
+      if (error.status == 409) {
+        console.log('hello');
+        setError('Tracker Name Already Exists. Please choose a different name.');
+      }
+      else if (error.status == 403) {
+        setError('Tracker Limit Reached. Please delete a tracker to create a new one.');
+      } else {
+        setError(error.response?.data?.message || error.message);
+      }
     }
   };
 
@@ -77,7 +92,7 @@ function CreateUserAndTracker() {
     <form className="trackerForm" onSubmit={handleSubmit}>
       {!success ? (
         <>
-          <h2 className="trackerHeader">Create Your First Tracker!</h2>
+          <h1 className="trackerHeader">Create a New Tracker</h1>
           <div className="trackerQuestions">
             <h3>What is your main concern?</h3>
             <input
@@ -110,4 +125,4 @@ function CreateUserAndTracker() {
   );
 }
 
-export default CreateUserAndTracker;
+export default CreateNewTracker;

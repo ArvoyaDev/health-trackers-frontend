@@ -13,6 +13,7 @@ function Login({ isAuth, activeButton, setActiveButton }: LoginProps) {
 
   const handleLogout = () => {
     dispatch(signOut());
+    window.location.href = '/';
   }
 
 

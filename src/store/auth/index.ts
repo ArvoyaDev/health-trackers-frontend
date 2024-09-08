@@ -3,10 +3,11 @@ import { jwtDecode } from 'jwt-decode';
 import axios from "axios";
 import { ThunkAction } from 'redux-thunk';
 import { Action } from 'redux';
+import { RootState } from '../../store/'; // Adjust the path to your store
 
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
-  void,
+  RootState,
   unknown,
   Action<string>
 >;
@@ -22,7 +23,6 @@ interface JWTAuthData {
   exp: number;
 }
 
-
 interface LoginPayload {
   accessToken: string | null;
   isAuth: boolean;
@@ -37,6 +37,7 @@ export interface TokenState {
     confirmed: boolean;
   }
 }
+
 interface User {
   firstName: string | null;
   lastName: string | null;
@@ -58,7 +59,6 @@ const initialState: TokenState = {
   }
 };
 
-
 export const login = createAction<LoginPayload>("LOGIN");
 export const authCheck = createAction<{ isAuth: boolean }>("AUTH_CHECK");
 export const logout = createAction("LOGOUT");
@@ -76,13 +76,8 @@ const authReducer = createReducer(initialState, (builder) => {
     .addCase(logout, (state) => {
       state.accessToken = null;
       state.isAuth = false;
-      state.user = {
-        firstName: null,
-        lastName: null,
-        email: null,
-        sub: null,
-      };
-    })
+      state.user = initialState.user;
+    });
 });
 
 export const signIn = (
@@ -111,15 +106,16 @@ export const signIn = (
     dispatch(login({ accessToken, user, isAuth: true }));
 
     return { success: true };
-  } catch (error: any) {
-
-    // Checking if the error message contains 'Incorrect username or password'
-    const errorMessage = error.response?.data;
-    if (errorMessage && errorMessage.includes("Incorrect username or password")) {
-      return { success: false, message: "Incorrect username or password." };
-    } else {
-      return { success: false, message: errorMessage || error.message || "An unknown error occurred." };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      const errorMessage = error.response?.data?.message || error.message || "An unknown error occurred.";
+      if (errorMessage.includes("Incorrect username or password")) {
+        return { success: false, message: "Incorrect username or password." };
+      } else {
+        return { success: false, message: errorMessage };
+      }
     }
+    return { success: false, message: 'An unknown error occurred.' };
   }
 };
 
@@ -147,23 +143,36 @@ export const refreshAccessToken = (
     dispatch(login({ accessToken, user, isAuth: true }));
 
     return { success: true };
-  } catch (error: any) {
-    return { success: false, message: error.response?.data?.message || error.message };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { success: false, message: error.response?.data?.message || error.message || 'An unknown error occurred.' };
+    }
+    return { success: false, message: 'An unknown error occurred.' };
   }
 };
 
-export const verifyAuthToken = (token: string): AppThunk => async (dispatch) => {
-  const authData = jwtDecode<JWTAuthData>(token);
+export const verifyAuthToken = (token: string): AppThunk<Promise<{ success: boolean; message?: string }>> => async (dispatch) => {
+  try {
+    const authData = jwtDecode<JWTAuthData>(token);
 
-  if (authData.exp && authData.exp > Date.now() / 1000) {
-    dispatch(authCheck({ isAuth: true }));
-  } else {
-    dispatch(authCheck({ isAuth: false }));
-    const result = await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL));
+    if (authData.exp && authData.exp > Date.now() / 1000) {
+      dispatch(authCheck({ isAuth: true }));
+      return { success: true };
+    } else {
+      dispatch(authCheck({ isAuth: false }));
+      const result = await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL)) as { success: boolean; message?: string };
 
-    if (!result.success) {
-      console.error(result.message);
+      if (!result.success) {
+        console.error(result.message);
+      }
+
+      return result;
     }
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { success: false, message: error.response?.data?.message || error.message || 'An unknown error occurred.' };
+    }
+    return { success: false, message: 'An unknown error occurred.' };
   }
 };
 
@@ -179,8 +188,11 @@ export const signOut = (): AppThunk<Promise<{ success: boolean; message?: string
     }
 
     return { success: false, message: 'Failed to sign out' };
-  } catch (error: any) {
-    return { success: false, message: error.response?.data?.message || error.message };
+  } catch (error) {
+    if (axios.isAxiosError(error)) {
+      return { success: false, message: error.response?.data?.message || error.message || 'An unknown error occurred.' };
+    }
+    return { success: false, message: 'An unknown error occurred.' };
   }
 };
 

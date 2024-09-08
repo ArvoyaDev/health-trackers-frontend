@@ -3,7 +3,6 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 20px;
   padding-bottom: 100px;
 }
 
@@ -24,6 +23,7 @@
   border-color: #F9A527;
   min-width: 300px;
   position: relative;
+  margin-top: 20px;
 }
 
 .logSymptoms{
@@ -67,3 +67,26 @@
 button {
   margin: 5px;
 }
+
+/* Style the container */
+.select-container {
+  display: flex;
+  flex-direction: column;
+  margin: 1rem 0;
+}
+
+/* Style the label */
+.select-container label {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+}
+
+/* Style the select element */
+.select-container select {
+  font-size: 1rem;
+  color: #333; /* Dark text color */
+}
+
+
+
