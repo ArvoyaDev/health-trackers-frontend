@@ -11,8 +11,8 @@ interface LoginProps {
 function Login({ isAuth, activeButton, setActiveButton }: LoginProps) {
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleLogout = () => {
-    dispatch(signOut());
+  const handleLogout = async () => {
+    await dispatch(signOut());
     window.location.href = '/';
   }
 
