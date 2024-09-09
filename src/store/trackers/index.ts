@@ -14,7 +14,7 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 interface Log {
   log_time: string | null;
   severity: string | null;
-  symptoms: string[];
+  symptoms: string;
   notes: string | null;
 }
 

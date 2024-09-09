@@ -18,7 +18,7 @@ function SignIn() {
     const result = await dispatch(signIn(email, password, url));
 
     if (!result.success) {
-      setError(result.message || 'An error occurred during sign-in');
+      setError('Invalid email or password. Please try again.');
     }
   };
 

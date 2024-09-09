@@ -1,47 +1,46 @@
+import BarGraph from './Graphs/Bar';
+import RadarGraph from './Graphs/Radar';
 import { useSelector } from 'react-redux';
-import { TrackerState } from '../store/trackers';
+import { updateSelectedTracker, TrackerState } from '../store/trackers';
+import { useDispatch } from 'react-redux';
+import './Graphs/Graphs.css';
 
 function DisplayLogs() {
-  const trackers = useSelector((state: { tracker: TrackerState }) => state.tracker.trackers);
+  const capitalizeFirstLetter = (string: string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+  const dispatch = useDispatch();
+  const trackerState = useSelector((state: { tracker: TrackerState }) => state.tracker);
+  const selectedTracker = trackerState.selectedTracker;
 
-  // Detect the user's time zone
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
+  const handleSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTracker = trackerState.trackers.find((tracker) => tracker.tracker_name === e.target.value);
+    if (newTracker !== undefined) {
+      dispatch(updateSelectedTracker(newTracker));
+    }
+  }
+
+  //if media width is less than 600px, display only bar graph
   return (
-    <>
-      <h1>Display Logs</h1>
-      {trackers.map((tracker) => (
-        <div key={tracker.tracker_name}>
-          <h2>{tracker.tracker_name}</h2>
-          {tracker.logs.length > 0 ? (
-            tracker.logs.map((log, index) => {
-              // Convert log time to a Date object and format it
-              const utcDate = new Date(`${log.log_time} UTC`);
-              const formattedDate = utcDate.toLocaleString('en-US', {
-                timeZone: userTimeZone, // Use the user's time zone
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit',
-              });
-
-              return (
-                <div key={index}>
-                  <p>{formattedDate}</p>
-                  <p>{log.severity}</p>
-                  <p>{log.symptoms}</p>
-                  <p>{log.notes}</p>
-                </div>
-              );
-            })
-          ) : (
-            <p>No logs to display</p>
-          )}
-        </div>
-      ))}
-    </>
+    <div className="displayLogs">
+      <h1>Display {capitalizeFirstLetter(selectedTracker.tracker_name)} Logs</h1>
+      {trackerState.trackers.length > 1 && (
+        <>
+          <select onChange={handleSelect} value={selectedTracker.tracker_name}>
+            {trackerState.trackers.map((tracker) => (
+              <option key={tracker.tracker_name} value={tracker.tracker_name}>
+                {tracker.tracker_name}
+              </option>
+            ))}
+          </select>
+        </>
+      )}
+      <div className="displayGraphs">
+        <BarGraph />
+        <RadarGraph />
+      </div>
+    </div>
   );
 }
 

@@ -150,8 +150,9 @@ function Logger() {
                   value={symptom.symptom_name}
                   checked={selectedSymptoms.includes(symptom.symptom_name)}
                   onChange={() => handleSymptomChange(symptom.symptom_name)}
+                  style={{ marginRight: "5px" }}
                 />
-                <label>{symptom.symptom_name}</label>
+                <label> {symptom.symptom_name}</label>
               </div>
             ))}
           </div>
@@ -160,7 +161,7 @@ function Logger() {
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)} />
           {error && <p style={{ color: "red" }} className="error">{error}</p>}
           <div className="buttons">
-            <button className="cancelButton" type="button" onClick={handleClick}>Change Tracker</button>
+            {trackerState.trackers.length > 1 && <button className="cancelButton" type="button" onClick={handleClick}>Change Tracker</button>}
             <button className="submitButton" type="submit">Submit</button>
           </div>
         </form>

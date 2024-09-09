@@ -1,7 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Zain:wght@200;300;400;700;800;900&display=swap');
 
-/* App.css */
-
 body {
   background-color: #1C2B3B;
   color: #fff;
@@ -279,4 +277,17 @@ background-color: #1C2B3B;
   text-decoration-color: #F9A527;
   text-underline-offset: 5px;
   text-decoration-thickness: 1px;
+}
+
+.welcome-message {
+  opacity: 0;
+  transition: opacity .3s ease-in-out;
+}
+
+.fade-in {
+  opacity: 1;
+}
+
+.fade-out {
+  opacity: 0;
 }

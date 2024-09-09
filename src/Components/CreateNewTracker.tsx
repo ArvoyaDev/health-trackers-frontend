@@ -33,8 +33,8 @@ function CreateNewTracker() {
 
     const symptomsArray = inputValue.split(',').map((symptom) => symptom.trim());
 
-    if (symptomsArray.length < 2) {
-      setError('Please enter at least 2 symptoms.');
+    if (symptomsArray.length < 3) {
+      setError('Please enter at least 3 symptoms.');
       return; // Prevent form submission if validation fails
     }
     if (symptomsArray.length > 15) {
