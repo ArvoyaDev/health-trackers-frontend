@@ -14,6 +14,7 @@ function CreateUserAndTracker() {
   const [trackerName, setTrackerName] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
   const email = useSelector((state: { auth: TokenState }) => state.auth.user.email);
   const accessToken = useSelector((state: { auth: TokenState }) => state.auth.accessToken);
 
@@ -47,6 +48,7 @@ function CreateUserAndTracker() {
       if (!accessToken) {
         throw new Error('Access token not found');
       }
+      setLoading(true);
 
       await dispatch(verifyAuthToken(accessToken));
 
@@ -66,14 +68,17 @@ function CreateUserAndTracker() {
       if (res.status == 201) {
         setError('');
         setSuccess(true); // Set success to true if the request succeeds
+        setInputValue('');
         await dispatch(verifyAuthToken(accessToken));
         await dispatch(fetchUser(accessToken));
+        setLoading(false);
       }
     } catch (error) {
 
       if (axios.isAxiosError(error)) {
         setError(error.response?.data?.message || error.message);
       }
+      setLoading(false);
     }
   };
 
@@ -110,6 +115,7 @@ function CreateUserAndTracker() {
       ) : (
         <p>Tracker created successfully!</p>
       )}
+      {loading && <p>Loading...</p>}
     </form>
   );
 }

@@ -21,6 +21,15 @@ function DisplayLogs() {
     }
   }
 
+  if (selectedTracker.logs.length === 0) {
+    return (
+      <div className="displayLogs">
+        <h1>Display {capitalizeFirstLetter(selectedTracker.tracker_name)} Logs</h1>
+        <h2>No logs to display</h2>
+      </div>
+    );
+  }
+
   //if media width is less than 600px, display only bar graph
   return (
     <div className="displayLogs">
