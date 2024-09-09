@@ -19,7 +19,7 @@ function CreateNewTracker() {
   const dispatch = useDispatch<AppDispatch>();
 
   const validateInput = (value: string) => {
-    const pattern = /^(\s*\w+(\s+\w+)?\s*(,\s*\w+(\s+\w+)?\s*)*)?$/;
+    const pattern = /^(\s*\w+(-\w+)?(\s+\w+(-\w+)?){0,2}\s*)(,\s*\w+(-\w+)?(\s+\w+(-\w+)?){0,2}\s*)*$/;
     return pattern.test(value);
   };
 
@@ -37,8 +37,8 @@ function CreateNewTracker() {
       setError('Please enter at least 3 symptoms.');
       return; // Prevent form submission if validation fails
     }
-    if (symptomsArray.length > 15) {
-      setError('Please enter no more than 15 symptoms.');
+    if (symptomsArray.length > 20) {
+      setError('Please enter no more than 20 symptoms.');
       return; // Prevent form submission if validation fails
     }
 

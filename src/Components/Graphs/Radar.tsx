@@ -51,7 +51,7 @@ function RadarGraph() {
             cx="50%"
             cy="50%"
             className="radar-graph"
-            outerRadius={outerRadius} // Dynamically set outerRadius
+            outerRadius={outerRadius}
             data={data}>
             <PolarGrid />
             <PolarAngleAxis dataKey="symptom" tick={{ fill: "white" }} />
@@ -61,7 +61,7 @@ function RadarGraph() {
           </RadarChart>
         </ResponsiveContainer>
       ) : (
-        <p>No data available</p>
+        <h2>Need atleast 5 logs to display radar of symptoms.</h2>
       )}
     </div>
   );

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { TrackerState } from '../store/trackers';
 import { updateSelectedTracker, addLog } from '../store/trackers';
 import './Styles/Logger.css';
-import axios from 'axios'; // Make sure to import axios
+import axios from 'axios';
 import { verifyAuthToken } from '../store/auth';
 import { AppDispatch } from '../store/index';
 
@@ -25,11 +25,11 @@ function Logger() {
   const selectedTracker = trackerState.selectedTracker;
 
   const handleClick = () => {
-    setSelectedSymptoms([]); // Clear selected symptoms
-    setSeverity(''); // Clear severity
-    setNotes(''); // Clear notes
+    setSelectedSymptoms([]);
+    setSeverity('');
+    setNotes('');
     setOpen(!open);
-    setError(null); // Clear error message
+    setError(null);
   }
 
   const capitalizeFirstLetter = (string: string) => {
@@ -45,10 +45,8 @@ function Logger() {
 
   const handleSymptomChange = (symptom: string) => {
     if (selectedSymptoms.includes(symptom)) {
-      // Remove symptom if already selected
       setSelectedSymptoms(selectedSymptoms.filter(s => s !== symptom));
     } else {
-      // Add symptom if not selected
       setSelectedSymptoms([...selectedSymptoms, symptom]);
     }
   };
@@ -71,7 +69,6 @@ function Logger() {
       return;
     }
 
-    // Prepare data to send to the backend
     const logData = {
       tracker_name: selectedTracker.tracker_name,
       severity,
@@ -79,7 +76,6 @@ function Logger() {
       notes,
     };
 
-    // Send the data to the backend (replace `YOUR_BACKEND_URL` with the correct URL)
     try {
       await dispatch(verifyAuthToken(accessToken));
       const res = await axios.post(
@@ -92,18 +88,19 @@ function Logger() {
         }
       );
       dispatch(addLog(res.data));
-      setSelectedSymptoms([]); // Clear selected symptoms
-      setSeverity(''); // Clear severity
-      setNotes(''); // Clear notes
-      setError(null); // Clear error message
-      setOpen(false); // Close the form after submission
-      setSuccess(true); // Display success message
+      setSelectedSymptoms([]);
+      setSeverity('');
+      setNotes('');
+      setError(null);
+      setOpen(false);
+      setSuccess(true);
       setTimeout(() => {
         setSuccess(false);
+        setOpen(true);
       }, 3000);
     } catch (error) {
       console.log(error);
-      setError(`An error occurred. Error: ${error} Please try again.`); // Display an error message
+      setError(`An error occurred. Error: ${error} Please try again.`);
     }
 
   };

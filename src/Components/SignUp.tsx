@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Tos from './Tos';
 
@@ -17,6 +17,17 @@ function SignUp() {
   const [showTos, setShowTos] = useState<boolean>(false);
   const [errorOnVerify, setErrorOnVerify] = useState<boolean>(false);
 
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('email');
+    const savedDisplayCodeForm = localStorage.getItem('displayCodeForm');
+    if (savedEmail) {
+      setEmail(savedEmail);
+    }
+    if (savedDisplayCodeForm === 'true') {
+      setDisplayCodeForm(true);
+    }
+  }, []);
+
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -27,7 +38,9 @@ function SignUp() {
         password,
       });
       if (res.status === 201) {
-        setDisplayCodeForm(!displayCodeForm);
+        localStorage.setItem('email', email);
+        localStorage.setItem('displayCodeForm', 'true');
+        setDisplayCodeForm(true);
       }
     } catch (error) {
       console.log(error);
@@ -51,19 +64,18 @@ function SignUp() {
     e.preventDefault();
     try {
       const code = confirmationCode.join('');
-      console.log(email);
-      console.log(code);
       const res = await axios.post(`${url}/aws-cognito/confirm-signup`, {
         email,
         confirmationCode: code,
       });
       if (res.status === 200) {
+        localStorage.removeItem('email');
+        localStorage.removeItem('displayCodeForm');
         setDisplaySuccess(true);
         setErrorOnVerify(false);
       }
-    } catch (error) {
+    } catch {
       setErrorOnVerify(true);
-      console.log(error);
     }
   };
 
@@ -132,6 +144,15 @@ function SignUp() {
           <div>
             <p>Please fill using the code sent to your email:</p>
             <form onSubmit={handleVerify} className="verificationForm">
+              {!email && (
+                <input
+                  type="email"
+                  placeholder="Email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              )}
               <div className="verifyNums">
                 {confirmationCode.map((code, index) => (
                   <input
@@ -154,7 +175,10 @@ function SignUp() {
             </form>
           </div>
         ) : (
-          <p>You can now sign in!</p>
+          <>
+            <p>You're verified!</p>
+            <p>Sign in <a href="/">here</a></p>
+          </>
         )
       )}
       {showTos && <Tos closeModal={() => setShowTos(false)} />}
