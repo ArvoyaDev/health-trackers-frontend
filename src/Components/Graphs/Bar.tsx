@@ -52,7 +52,7 @@ function BarGraph() {
 
   const selectedTracker = useSelector((state: { tracker: TrackerState }) => state.tracker.selectedTracker);
 
-  const timeZone = userTimeZone || 'PST';
+  const timeZone = userTimeZone || 'America/Los_Angeles'; // Default to a specific timezone
 
   const formateDate = (date: string | null) => {
     if (!date) return '';
@@ -69,7 +69,7 @@ function BarGraph() {
 
   const formateDateXAxis = (date: string | null) => {
     if (!date) return '';
-    const timeZone = userTimeZone || 'PST';
+    const timeZone = userTimeZone || 'America/Los_Angeles'; // Default to a specific timezone
     const utcDate = new Date(`${date} UTC`);
     return utcDate.toLocaleString('en-US', {
       timeZone: timeZone,
