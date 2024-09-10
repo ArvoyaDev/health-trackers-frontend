@@ -49,13 +49,16 @@ function BarGraph() {
 
 
   const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
   const selectedTracker = useSelector((state: { tracker: TrackerState }) => state.tracker.selectedTracker);
+
+  const timeZone = userTimeZone || 'PST';
 
   const formateDate = (date: string | null) => {
     if (!date) return '';
     const utcDate = new Date(`${date} UTC`);
     return utcDate.toLocaleString('en-US', {
-      timeZone: userTimeZone,
+      timeZone: timeZone,
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -66,9 +69,10 @@ function BarGraph() {
 
   const formateDateXAxis = (date: string | null) => {
     if (!date) return '';
+    const timeZone = userTimeZone || 'PST';
     const utcDate = new Date(`${date} UTC`);
     return utcDate.toLocaleString('en-US', {
-      timeZone: userTimeZone,
+      timeZone: timeZone,
       month: 'short',
       day: 'numeric',
     });
