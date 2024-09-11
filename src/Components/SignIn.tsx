@@ -5,6 +5,7 @@ import { AppDispatch } from '../store/index';
 import { fetchUser } from '../store/trackers';
 import { useSelector } from 'react-redux';
 import { TokenState, loading } from '../store/auth';
+import ForgotPassword from './ForgotPassword';
 
 
 const url = import.meta.env.VITE_BACKEND_URL;
@@ -13,6 +14,7 @@ function SignIn() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [forgotPassword, setForgotPassword] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
   const authState = useSelector((state: { auth: TokenState }) => state.auth);
 
@@ -35,24 +37,30 @@ function SignIn() {
   };
 
   return (
-    <form className="signInForm" onSubmit={handleSubmit}>
-      {error && <p style={{ color: "red" }} className="error">{error}</p>}
-      <input
-        type="email"
-        placeholder="Email"
-        required
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        required
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Sign In</button>
-    </form>
+    <>
+      <form className="signInForm" onSubmit={handleSubmit}>
+        {error && <p style={{ color: "red" }} className="error">{error}</p>}
+        <input
+          type="email"
+          placeholder="Email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <button type="button"
+          onClick={() => setForgotPassword(true)}
+        >Forgot Password</button>
+        <button type="submit">Sign In</button>
+      </form>
+      {forgotPassword && (<ForgotPassword />)}
+    </>
   );
 }
 
