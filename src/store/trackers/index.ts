@@ -110,7 +110,6 @@ export const fetchUser = (accessToken: string): AppThunk<Promise<{ success: bool
     const trackers = obj.trackers;
     const stateTracker: Tracker[] = [];
 
-    // Mapping trackers with their corresponding symptoms
     trackers.forEach((tracker) => {
       if (tracker.logs === null) {
         tracker.logs = [];
@@ -126,7 +125,6 @@ export const fetchUser = (accessToken: string): AppThunk<Promise<{ success: bool
       });
     });
 
-    // Dispatching the getUser action with mapped trackers
     dispatch(getUser({ trackers: stateTracker, selectedTracker: stateTracker[0] }));
 
     return { success: true };

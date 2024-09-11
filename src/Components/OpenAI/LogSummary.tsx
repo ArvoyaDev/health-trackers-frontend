@@ -16,12 +16,10 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
     let currentSection = '';
 
     sections.forEach((line) => {
-      const trimmedLine = line.trim(); // Trim whitespace from the line
+      const trimmedLine = line.trim();
 
-      // Skip empty lines
       if (!trimmedLine) return;
 
-      // Detect section headers
       if (trimmedLine.startsWith('- Patterns observed:')) {
         currentSection = 'patterns';
       } else if (trimmedLine.startsWith('- Recommendations:')) {
@@ -29,9 +27,8 @@ const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
       } else if (trimmedLine.startsWith('- Holistic Techniques:')) {
         currentSection = 'techniques';
       } else if (trimmedLine.startsWith("It's always advisable")) {
-        advisoryNote = trimmedLine;  // Handle advisory note
+        advisoryNote = trimmedLine;
       } else {
-        // Push non-empty lines into respective sections based on currentSection
         if (currentSection === 'patterns') {
           patterns.push(trimmedLine);
         } else if (currentSection === 'recommendations') {

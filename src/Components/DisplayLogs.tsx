@@ -135,7 +135,7 @@ function DisplayLogs() {
         </div>
       )}
       {activeTab === 'summary' && (
-        selectedTracker.logs.length > 1 ? (
+        selectedTracker.logs.length > 2 ? (
           <div className="openai">
             <div className="aiHeader">
               <h2>OpenAI GPT-4</h2>
@@ -178,7 +178,7 @@ function DisplayLogs() {
           </div>
         ) : (
           <div style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}>
-            <h2>Need at least 5 logs to retrieve an AI summary.</h2>
+            <h2>Need at least 3 logs to retrieve an AI summary.</h2>
           </div>
         )
       )}

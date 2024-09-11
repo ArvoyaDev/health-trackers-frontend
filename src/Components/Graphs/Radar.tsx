@@ -45,7 +45,7 @@ function RadarGraph() {
   return (
     <div className="graphs">
       <h1>Radar Graph</h1>
-      {selectedTracker.logs.length > 5 ? (
+      {selectedTracker.logs.length > 2 ? (
         <ResponsiveContainer width="100%" height={300}>
           <RadarChart
             cx="50%"
@@ -61,7 +61,7 @@ function RadarGraph() {
           </RadarChart>
         </ResponsiveContainer>
       ) : (
-        <h2>Need atleast 5 logs to display radar of symptoms.</h2>
+        <h2>Need atleast 3 logs to display radar of symptoms.</h2>
       )}
     </div>
   );
