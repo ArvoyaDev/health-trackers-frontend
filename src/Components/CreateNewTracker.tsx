@@ -27,8 +27,8 @@ function CreateNewTracker() {
     e.preventDefault();
 
     if (!validateInput(inputValue)) {
-      setError('Please enter symptoms as one or two words per symptom, separated by commas.');
-      return; // Prevent form submission if validation fails
+      setError('Please enter symptoms as one to three words per symptom, using only letters, hyphens, and spaces. Separate symptoms with commas. Numbers and special characters are not allowed.');
+      return;
     }
 
     const symptomsArray = inputValue.split(',').map((symptom) => symptom.trim());
