@@ -54,12 +54,8 @@ function SignIn() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="button"
-          onClick={() => setForgotPassword(true)}
-        >Forgot Password</button>
         <button type="submit">Sign In</button>
       </form>
-      {forgotPassword && (<ForgotPassword />)}
     </>
   );
 }
