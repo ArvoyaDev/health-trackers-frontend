@@ -56,7 +56,12 @@ function BarGraph() {
 
   const formateDate = (date: string | null) => {
     if (!date) return '';
-    const utcDate = new Date(`${date} UTC`);
+    // Replace the space with 'T' to ensure ISO format compatibility
+    const isoDate = date.replace(' ', 'T');
+    const utcDate = new Date(isoDate); // Parse the ISO date
+    if (isNaN(utcDate.getTime())) {
+      return 'Invalid Date'; // Fallback if the date cannot be parsed
+    }
     return utcDate.toLocaleString('en-US', {
       timeZone: timeZone,
       month: 'short',
@@ -66,11 +71,13 @@ function BarGraph() {
     });
   }
 
-
   const formateDateXAxis = (date: string | null) => {
     if (!date) return '';
-    const timeZone = userTimeZone || 'America/Los_Angeles'; // Default to a specific timezone
-    const utcDate = new Date(`${date} UTC`);
+    const isoDate = date.replace(' ', 'T');
+    const utcDate = new Date(isoDate); // Parse the ISO date
+    if (isNaN(utcDate.getTime())) {
+      return 'Invalid Date';
+    }
     return utcDate.toLocaleString('en-US', {
       timeZone: timeZone,
       month: 'short',
