@@ -1,4 +1,9 @@
-const SummaryDisplay = ({ summary }) => {
+interface SummaryDisplayProps {
+  summary: string;
+}
+
+
+const SummaryDisplay: React.FC<SummaryDisplayProps> = ({ summary }) => {
 
   const summaryToJSX = (summary: string) => {
     const sections = summary.split('\n');
