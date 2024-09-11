@@ -119,7 +119,10 @@ export const fetchUser = (accessToken: string): AppThunk<Promise<{ success: bool
         tracker_name: tracker.tracker_name,
         symptoms: tracker.symptoms,
         logs: tracker.logs,
-        summary: "",
+        summary: {
+          naturopathy: "",
+          ayurveda: "",
+        },
       });
     });
 
