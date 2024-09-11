@@ -56,9 +56,9 @@ function App() {
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <h1>Loading...</h1>
               </div>
-            ) : authState.isAuth && !foundUser ? (
+            ) : authState.isAuth && !foundUser && userFetched ? (
               <CreateUserAndTracker />
-            ) : authState.isAuth && foundUser ? (
+            ) : authState.isAuth && foundUser && userFetched ? (
               <Logger />
             ) : null
           } />
