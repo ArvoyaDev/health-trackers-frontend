@@ -48,22 +48,21 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 function BarGraph() {
 
 
-  const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const selectedTracker = useSelector((state: { tracker: TrackerState }) => state.tracker.selectedTracker);
 
-  const timeZone = userTimeZone || 'America/Los_Angeles'; // Default to a specific timezone
-
   const formateDate = (date: string | null) => {
     if (!date) return '';
-    // Replace the space with 'T' to ensure ISO format compatibility
-    const isoDate = date.replace(' ', 'T');
+    const isoDate = date.replace(' ', 'T'); // Ensure ISO format compatibility
     const utcDate = new Date(isoDate); // Parse the ISO date
     if (isNaN(utcDate.getTime())) {
       return 'Invalid Date'; // Fallback if the date cannot be parsed
     }
-    return utcDate.toLocaleString('en-US', {
-      timeZone: timeZone,
+
+    const offsetInMinutes = new Date().getTimezoneOffset();
+    const adjustedDate = new Date(utcDate.getTime() - offsetInMinutes * 60000);
+
+    return adjustedDate.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
@@ -78,8 +77,12 @@ function BarGraph() {
     if (isNaN(utcDate.getTime())) {
       return 'Invalid Date';
     }
-    return utcDate.toLocaleString('en-US', {
-      timeZone: timeZone,
+
+    // Adjusting for the user's local timezone using getTimezoneOffset
+    const offsetInMinutes = new Date().getTimezoneOffset();
+    const adjustedDate = new Date(utcDate.getTime() - offsetInMinutes * 60000);
+
+    return adjustedDate.toLocaleString('en-US', {
       month: 'short',
       day: 'numeric',
     });
