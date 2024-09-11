@@ -63,3 +63,97 @@
   width: 500px;
 }
 
+.displayToggle{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.singleToggle{
+  margin: 10px;
+  padding: 3px;
+  border: 1px; 
+  transition: 0.3s;
+  border-radius: 30px;
+}
+
+.singleToggle:hover{
+  cursor: pointer;
+  border: 1px solid #F9A527;
+  padding: 3px;
+  background-color: #5C6D7E;
+  border-radius: 30px;
+}
+
+
+.singleToggle.active {
+  border: 1px solid #F9A527;
+  padding: 3px;
+  border-radius: 30px;
+}
+
+.openai {
+  display: flex;
+  flex-direction: column;
+  border-style: solid;
+  border-width: 1px;
+  border-color: white;
+  border-radius: 15px;
+  padding: 10px;
+  margin: auto;
+  width:60%;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.openai h2 {
+  display: inline-block;
+}
+
+.aiHeader{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+@media (max-width: 800px) {
+  .aiHeader{
+    flex-direction: column;
+  }
+  .openai {
+    width: 80%;
+  }
+}
+
+.aiHeader span {
+  border-width: 1px;
+  border-color: white;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-radius: 15px;
+  font-size: .9rem;
+}
+
+.aiTab.active {
+  border: 1px solid #F9A527;
+  border-radius: 30px;
+}
+
+.aiTab:hover {
+  cursor: pointer;
+  border: 1px solid white;
+  border-radius: 30px;
+}
+
+.aiTab.active:hover{
+  border: 1px solid #F9A527;
+}
+
+.selectContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}

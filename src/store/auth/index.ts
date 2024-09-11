@@ -32,6 +32,7 @@ interface LoginPayload {
 export interface TokenState {
   accessToken: string | null;
   isAuth: boolean;
+  loading: boolean;
   user: User;
   signUp: {
     confirmed: boolean;
@@ -48,6 +49,7 @@ interface User {
 const initialState: TokenState = {
   accessToken: null,
   isAuth: false,
+  loading: false,
   user: {
     firstName: null,
     lastName: null,
@@ -62,6 +64,7 @@ const initialState: TokenState = {
 export const login = createAction<LoginPayload>("LOGIN");
 export const authCheck = createAction<{ isAuth: boolean }>("AUTH_CHECK");
 export const logout = createAction("LOGOUT");
+export const loading = createAction("LOADING");
 
 const authReducer = createReducer(initialState, (builder) => {
   builder
@@ -77,6 +80,9 @@ const authReducer = createReducer(initialState, (builder) => {
       state.accessToken = null;
       state.isAuth = false;
       state.user = initialState.user;
+    })
+    .addCase(loading, (state) => {
+      state.loading = !state.loading;
     });
 });
 
@@ -159,7 +165,6 @@ export const verifyAuthToken = (token: string): AppThunk<Promise<{ success: bool
       dispatch(authCheck({ isAuth: true }));
       return { success: true };
     } else {
-      dispatch(authCheck({ isAuth: false }));
       const result = await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL)) as { success: boolean; message?: string };
 
       if (!result.success) {
@@ -172,6 +177,7 @@ export const verifyAuthToken = (token: string): AppThunk<Promise<{ success: bool
     if (axios.isAxiosError(error)) {
       return { success: false, message: error.response?.data?.message || error.message || 'An unknown error occurred.' };
     }
+    await dispatch(refreshAccessToken(import.meta.env.VITE_BACKEND_URL)) as { success: boolean; message?: string };
     return { success: false, message: 'An unknown error occurred.' };
   }
 };

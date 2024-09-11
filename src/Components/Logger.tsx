@@ -163,7 +163,6 @@ function Logger() {
           </div>
         </form>
       )}
-
       {!open && <button onClick={handleClick}>Log {selectedTracker.tracker_name}</button>}
       {success && <p style={{ color: "#F9A527" }}>Log submitted successfully!</p>}
     </div>
