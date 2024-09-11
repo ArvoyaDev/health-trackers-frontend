@@ -5,50 +5,44 @@ import CreateUserAndTracker from './Components/CreateTracker';
 import CreateNewTracker from './Components/CreateNewTracker';
 import Logger from './Components/Logger';
 import DisplayLogs from './Components/DisplayLogs';
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { refreshAccessToken } from './store/auth';
-import { fetchUser } from './store/trackers'; // Import your `fetchUser` action
+import { refreshAccessToken, loading } from './store/auth';
 import { AppDispatch } from './store/index';
 import { TokenState } from './store/auth';
-import { TrackerState } from './store/trackers';
+import { fetchUser, TrackerState } from './store/trackers';
+import { useState } from 'react';
 
 const url = import.meta.env.VITE_BACKEND_URL;
+
 
 function App() {
   const authState = useSelector((state: { auth: TokenState }) => state.auth);
   const trackerState = useSelector((state: { tracker: TrackerState }) => state.tracker);
   const dispatch = useDispatch<AppDispatch>();
-  const [loading, setLoading] = useState<boolean>(true);
+
+  const [userFetched, setUserFetched] = useState(false);
+  const isLoaded = authState.loading;
 
   useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      try {
-        // Dispatch the fetchUser action to retrieve the user's trackers
-        if (authState.accessToken) {
-          await dispatch(fetchUser(authState.accessToken));
-        }
-      } catch {
-        setLoading(false);
-      } finally {
-        setLoading(false);
+    const loadUser = async () => {
+      if (authState.accessToken && !userFetched) {
+        await dispatch(fetchUser(authState.accessToken));
+        setUserFetched(true);
       }
     };
 
-    // Refresh access token if not authenticated
     if (authState.accessToken == null && !authState.isAuth) {
       dispatch(refreshAccessToken(url));
     }
 
-    // Fetch user data once authenticated
-    if (authState.isAuth) {
-      loadData();
-    } else {
-      setLoading(false);
+    if (trackerState.trackers.length === 0 && authState.accessToken && !userFetched) {
+      dispatch(loading());
+      loadUser().finally(() => {
+        dispatch(loading());
+      });
     }
-
-  }, [dispatch, authState.accessToken, authState.isAuth]);
+  }, [dispatch, authState.accessToken, authState.isAuth, trackerState.trackers.length, userFetched]);
 
   const foundUser = trackerState.trackers.length > 0;
 
@@ -58,7 +52,7 @@ function App() {
         <Header auth={authState} foundUser={foundUser} />
         <Routes>
           <Route path="/" element={
-            loading ? (
+            isLoaded ? (
               <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <h1>Loading...</h1>
               </div>

@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { signIn } from '../store/auth';
 import { AppDispatch } from '../store/index';
+import { fetchUser } from '../store/trackers';
+import { useSelector } from 'react-redux';
+import { TokenState, loading } from '../store/auth';
+
 
 const url = import.meta.env.VITE_BACKEND_URL;
 
@@ -10,6 +14,7 @@ function SignIn() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const dispatch = useDispatch<AppDispatch>();
+  const authState = useSelector((state: { auth: TokenState }) => state.auth);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,6 +24,13 @@ function SignIn() {
 
     if (!result.success) {
       setError('Invalid email or password. Please try again.');
+    }
+
+    if (authState.accessToken) {
+      dispatch(loading());
+      await dispatch(fetchUser(authState.accessToken)).finally(() => {
+        dispatch(loading());
+      });
     }
   };
 

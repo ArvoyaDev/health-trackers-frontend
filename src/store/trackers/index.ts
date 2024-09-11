@@ -23,10 +23,16 @@ interface Symptom {
   symptom_name: string;
 }
 
+interface Summary {
+  naturopathy: string,
+  ayurveda: string,
+}
+
 interface Tracker {
   tracker_name: string;
   symptoms: Symptom[];
   logs: Log[];
+  summary: Summary;
 }
 
 interface UserPayload {
@@ -46,6 +52,10 @@ const initialState: TrackerState = {
     tracker_name: "",
     symptoms: [],
     logs: [],
+    summary: {
+      naturopathy: "",
+      ayurveda: "",
+    }
   },
 }
 
@@ -54,6 +64,8 @@ const getUser = createAction<TrackerState>("GET_USER");
 export const addLog = createAction<Log>("ADD_LOG");
 
 export const updateSelectedTracker = createAction<Tracker>("UPDATE_SELECTED_TRACKER");
+
+export const updateSummary = createAction<Summary>("UPDATE_SUMMARY");
 
 // Reducer for managing tracker state
 const trackerReducer = createReducer(initialState, (builder) => {
@@ -73,6 +85,9 @@ const trackerReducer = createReducer(initialState, (builder) => {
         }
         return tracker;
       });
+    })
+    .addCase(updateSummary, (state, action) => {
+      state.selectedTracker.summary = action.payload;
     });
 
 });
@@ -104,6 +119,7 @@ export const fetchUser = (accessToken: string): AppThunk<Promise<{ success: bool
         tracker_name: tracker.tracker_name,
         symptoms: tracker.symptoms,
         logs: tracker.logs,
+        summary: "",
       });
     });
 
