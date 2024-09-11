@@ -19,6 +19,7 @@ function DisplayLogs() {
   const [loading, setLoading] = useState<boolean>(false);
   const [activeTab, setActiveTab] = useState<string>('graphs');
   const [medicalType, setMedicalType] = useState<string>('Naturopathy');
+  const [error, setError] = useState<string | null>(null);
   const trackerState = useSelector((state: { tracker: TrackerState }) => state.tracker);
   const selectedTracker = trackerState.selectedTracker;
   const authState = useSelector((state: { auth: TokenState }) => state.auth);
@@ -59,17 +60,21 @@ function DisplayLogs() {
     };
 
     try {
+
       if (authState.accessToken) {
         await dispatch(verifyAuthToken(authState.accessToken));
       }
 
       setLoading(true);
+
       if (medicalType === 'Naturopathy') {
         dispatch(updateSummary({ naturopathy: "", ayurveda: selectedTracker.summary.ayurveda }));
       } else if (medicalType === 'Ayurveda') {
         dispatch(updateSummary({ ayurveda: "", naturopathy: selectedTracker.summary.naturopathy }));
       }
+
       const response = await axios.post(
+
         `${import.meta.env.VITE_BACKEND_URL}/db/openai`,
         data,
         {
@@ -85,8 +90,8 @@ function DisplayLogs() {
       } else if (medicalType === 'Ayurveda') {
         dispatch(updateSummary({ ayurveda: response.data, naturopathy: selectedTracker.summary.naturopathy }));
       }
-    } catch (error) {
-      console.error('Error fetching summary:', error);
+    } catch {
+      setError('Please Try Again.');
     } finally {
       setLoading(false);
     }
@@ -162,6 +167,7 @@ function DisplayLogs() {
             </p>
             <p>Upon clicking the button you are agreeing to the OpenAI terms of service and privacy policy.</p>
             <button onClick={getSummary} disabled={loading}>Generate Summary</button>
+            {error && <p style={{ color: "red" }} className="error">Please Try Again.</p>}
             {loading && <p>Loading...</p>}
             {ayurvedicSummary && medicalType === "Ayurveda" && (
               <div className="summary">

@@ -35,11 +35,11 @@ function CreateNewTracker() {
 
     if (symptomsArray.length < 3) {
       setError('Please enter at least 3 symptoms.');
-      return; // Prevent form submission if validation fails
+      return;
     }
     if (symptomsArray.length > 20) {
-      setError('Please enter no more than 20 symptoms.');
-      return; // Prevent form submission if validation fails
+      setError('Please enter no more than 20 core symptoms.');
+      return;
     }
 
     try {
@@ -64,10 +64,9 @@ function CreateNewTracker() {
       );
       if (res.status == 201) {
         setError('');
-        setSuccess(true); // Set success to true if the request succeeds
+        setSuccess(true);
         setInputValue('');
         setTrackerName('');
-        //timeout to reset the success message
         setTimeout(() => {
           setSuccess(false);
         }, 3000);
@@ -83,7 +82,7 @@ function CreateNewTracker() {
         else if (error.status == 403) {
           setError('Tracker Limit Reached. Please delete a tracker to create a new one.');
         } else {
-          setError(error.response?.data?.message || error.message);
+          setError(error.response?.data?.message || "An error occurred. Please try again.");
         }
       }
     };

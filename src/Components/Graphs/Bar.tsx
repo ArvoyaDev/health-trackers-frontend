@@ -106,7 +106,7 @@ function BarGraph() {
     return {
       name: formateDateXAxis(log.log_time),
       time: formateDate(log.log_time),
-      severity: severityToNumber(log.severity),
+      Severity: severityToNumber(log.severity),
       symptoms: log.symptoms,
       notes: log.notes,
     };
@@ -133,7 +133,7 @@ function BarGraph() {
           />
           <Tooltip content={<CustomTooltip />} />
           <Legend />
-          <Bar dataKey="severity" fill="#F9A527" />
+          <Bar dataKey="Severity" fill="#F9A527" />
         </BarChart>
       </ResponsiveContainer>
     </div>
