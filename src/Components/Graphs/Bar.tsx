@@ -5,7 +5,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsive
 interface PayloadItem {
   payload: {
     time: string;
-    severity: number;
+    Severity: number;
     symptoms: string;
     notes: string;
   };
@@ -18,12 +18,12 @@ interface CustomTooltipProps {
 
 const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
 
-  const numberToSeverity = (severity: number) => {
-    if (severity === 1) {
+  const numberToSeverity = (Severity: number) => {
+    if (Severity === 1) {
       return 'mild';
-    } else if (severity === 2) {
+    } else if (Severity === 2) {
       return 'moderate';
-    } else if (severity === 3) {
+    } else if (Severity === 3) {
       return 'severe';
     } else {
       return '';
@@ -35,7 +35,7 @@ const CustomTooltip: React.FC<CustomTooltipProps> = ({ active, payload }) => {
     return (
       <div className="custom-tooltip">
         <h3 className="LogTime">{payload[0].payload.time}</h3>
-        <p className="Severity">SEVERITY: {numberToSeverity(payload[0].payload.severity)}</p>
+        <p className="Severity">SEVERITY: {numberToSeverity(payload[0].payload.Severity)}</p>
         <p className="Symptoms">SYMPTOMS: {payload[0].payload.symptoms}</p>
         {payload[0].payload.notes != '' && <p className="Notes">NOTES: {payload[0].payload.notes}</p>}
       </div>
