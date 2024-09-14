@@ -54,6 +54,7 @@ function DisplayLogs() {
   }
 
   const getSummary = async () => {
+    setError(null);
     const data = {
       medical_type: medicalType,
       logs: selectedTracker.logs,
