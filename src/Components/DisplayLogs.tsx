@@ -90,6 +90,7 @@ function DisplayLogs() {
       } else if (medicalType === 'Ayurveda') {
         dispatch(updateSummary({ ayurveda: response.data, naturopathy: selectedTracker.summary.naturopathy }));
       }
+      setError(null);
     } catch {
       setError('Please Try Again.');
     } finally {
