@@ -12,7 +12,6 @@ import { AppDispatch } from './store/index';
 import { TokenState } from './store/auth';
 import { fetchUser, TrackerState } from './store/trackers';
 import { useState } from 'react';
-import ForgotPassword from './Components/ForgotPassword';
 
 const url = import.meta.env.VITE_BACKEND_URL;
 
