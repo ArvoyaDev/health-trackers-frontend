@@ -290,3 +290,17 @@ background-color: #1C2B3B;
 .fade-out {
   opacity: 0;
 }
+
+.forgotPassLink{
+  display: flex;
+  justify-content: right;
+  text-underline-offset: 5px;
+  text-decoration-thickness: 1px;
+  color: gray;
+  font-size: 0.9rem;
+}
+
+.forgotPassLink:hover{
+  cursor: pointer;
+  color: #F9A527;
+}
